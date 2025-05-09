@@ -1,37 +1,19 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:highlight/highlight_core.dart';
+import 'package:highlight/highlight.dart';
 
-import '../code_modifiers/close_block_code_modifier.dart';
-import '../code_modifiers/code_modifier.dart';
-import '../code_modifiers/indent_code_modifier.dart';
-import '../code_modifiers/tab_code_modifier.dart';
-import '../code_theme/code_theme.dart';
-import '../code_theme/code_theme_data.dart';
+import '../../../../code_field_custom/lib/src/code_modifiers/close_block_code_modifier.dart';
+import '../../../../code_field_custom/lib/src/code_modifiers/code_modifier.dart';
+import '../../../../code_field_custom/lib/src/code_modifiers/indent_code_modifier.dart';
+import '../../../../code_field_custom/lib/src/code_modifiers/tab_code_modifier.dart';
+import '../../../../code_field_custom/lib/src/code_theme/code_theme.dart';
+import '../../../../code_field_custom/lib/src/code_theme/code_theme_data.dart';
 import 'code_auto_complete.dart';
-import 'editor_params.dart';
+import '../../../../code_field_custom/lib/src/code_field/editor_params.dart';
 
 class CodeController extends TextEditingController {
-  Mode? _language;
   CodeAutoComplete? autoComplete;
-
-  /// A highlight language to parse the text with
-  Mode? get language => _language;
-
-  set language(Mode? language) {
-    if (language == _language) {
-      return;
-    }
-
-    if (language != null) {
-      _languageId = language.hashCode.toString();
-      highlight.registerLanguage(_languageId, language);
-    }
-
-    _language = language;
-    notifyListeners();
-  }
 
   /// A map of specific regexes to style
   final Map<String, TextStyle>? patternMap;
@@ -48,16 +30,16 @@ class CodeController extends TextEditingController {
   final List<CodeModifier> modifiers;
 
   /* Computed members */
-  String _languageId = '';
+  String languageId;
   final _modifierMap = <String, CodeModifier>{};
   final _styleList = <TextStyle>[];
   RegExp? _styleRegExp;
 
-  String get languageId => _languageId;
+  final List<TextRange> _incorrectRanges = [];
 
   CodeController({
     String? text,
-    Mode? language,
+    required this.languageId,
     // @Deprecated('Use CodeTheme widget to provide theme to CodeField.')
     //     Map<String, TextStyle>? theme,
     this.patternMap,
@@ -69,7 +51,6 @@ class CodeController extends TextEditingController {
       TabModifier(),
     ],
   }) : super(text: text) {
-    this.language = language;
 
     // Create modifier map
     for (final el in modifiers) {
@@ -240,7 +221,7 @@ class CodeController extends TextEditingController {
     CodeThemeData? widgetTheme,
     TextStyle? style,
   ) {
-    final result = highlight.parse(text, language: _languageId);
+    final result = highlight.parse(text, language: languageId);
 
     final nodes = result.nodes;
 
@@ -294,35 +275,27 @@ class CodeController extends TextEditingController {
     TextStyle? style,
     bool? withComposing,
   }) {
-    // Return parsing
-    if (_language != null) {
-      return _processLanguage(text, CodeTheme.of(context), style);
-    }
-    if (_styleRegExp != null) {
-      return _processPatterns(text, style);
-    }
-    return TextSpan(text: text, style: style);
+    return _processLanguage(text, CodeTheme.of(context), style);
   }
 
   CodeController copyWith({
-    Mode? _language,
+    String? languageId,
     CodeAutoComplete? autoComplete,
     Map<String, TextStyle>? patternMap,
     Map<String, TextStyle>? stringMap,
     EditorParams? params,
     List<CodeModifier>? modifiers,
-    String? _languageId,
-    RegExp? _styleRegExp,
+    RegExp? styleRegExp,
   }) {
     return CodeController(
-      _language: _language ?? this._language,
-      autoComplete: autoComplete ?? this.autoComplete,
+      languageId: languageId ?? this.languageId,
+      // autoComplete: autoComplete ?? this.autoComplete,
       patternMap: patternMap ?? this.patternMap,
       stringMap: stringMap ?? this.stringMap,
       params: params ?? this.params,
       modifiers: modifiers ?? this.modifiers,
-      _languageId: _languageId ?? this._languageId,
-      _styleRegExp: _styleRegExp ?? this._styleRegExp,
+      // languageId: languageId ?? this._languageId,
+      // styleRegExp: styleRegExp ?? this._styleRegExp,
     );
   }
 }
