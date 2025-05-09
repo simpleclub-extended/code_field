@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:highlight/highlight.dart';
 
-import '../../../../code_field_custom/lib/src/code_modifiers/close_block_code_modifier.dart';
-import '../../../../code_field_custom/lib/src/code_modifiers/code_modifier.dart';
-import '../../../../code_field_custom/lib/src/code_modifiers/indent_code_modifier.dart';
-import '../../../../code_field_custom/lib/src/code_modifiers/tab_code_modifier.dart';
-import '../../../../code_field_custom/lib/src/code_theme/code_theme.dart';
-import '../../../../code_field_custom/lib/src/code_theme/code_theme_data.dart';
+import '../code_modifiers/close_block_code_modifier.dart';
+import '../code_modifiers/code_modifier.dart';
+import '../code_modifiers/indent_code_modifier.dart';
+import '../code_modifiers/tab_code_modifier.dart';
+import '../code_theme/code_theme.dart';
+import '../code_theme/code_theme_data.dart';
 import 'code_auto_complete.dart';
-import '../../../../code_field_custom/lib/src/code_field/editor_params.dart';
+import 'editor_params.dart';
 
 class CodeController extends TextEditingController {
   CodeAutoComplete? autoComplete;
@@ -35,13 +35,9 @@ class CodeController extends TextEditingController {
   final _styleList = <TextStyle>[];
   RegExp? _styleRegExp;
 
-  final List<TextRange> _incorrectRanges = [];
-
   CodeController({
     String? text,
     required this.languageId,
-    // @Deprecated('Use CodeTheme widget to provide theme to CodeField.')
-    //     Map<String, TextStyle>? theme,
     this.patternMap,
     this.stringMap,
     this.params = const EditorParams(),

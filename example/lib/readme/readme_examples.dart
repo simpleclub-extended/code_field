@@ -24,7 +24,7 @@ class _CodeEditorState extends State<CodeEditor> {
     // Instantiate the CodeController
     _codeController = CodeController(
       text: source,
-      language: dart,
+      languageId: 'dart',
     );
   }
 
@@ -62,7 +62,7 @@ class _CodeEditor1State extends State<CodeEditor1> {
     // Instantiate the CodeController
     _codeController = CodeController(
       text: source,
-      language: dart,
+      languageId: 'dart',
     );
   }
 
@@ -103,7 +103,7 @@ class _CodeEditor2State extends State<CodeEditor2> {
     // Instantiate the CodeController
     _codeController = CodeController(
       text: source,
-      language: dart,
+      languageId: 'dart',
       stringMap: {
         "Hello": TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
         "world": TextStyle(fontStyle: FontStyle.italic, color: Colors.green),
@@ -148,7 +148,7 @@ class _CodeEditor3State extends State<CodeEditor3> {
     // Instantiate the CodeController
     _codeController = CodeController(
       text: source,
-      language: dart,
+      languageId: 'dart',
       patternMap: {
         r"\B#[a-zA-Z0-9]+\b":
             TextStyle(fontWeight: FontWeight.bold, color: Colors.purpleAccent),
@@ -192,6 +192,7 @@ class _CodeEditor4State extends State<CodeEditor4> {
     final source = "void main() {\n    print(\"#Hello, #world!\");\n}";
     // Instantiate the CodeController
     _codeController = CodeController(
+      languageId: 'dart',
       text: source,
       patternMap: {
         r'".*"': TextStyle(color: Colors.yellow),
@@ -258,7 +259,7 @@ void main() {
     // Instantiate the CodeController
     _codeController = CodeController(
       text: source,
-      language: dart,
+      languageId: 'dart',
     );
   }
 

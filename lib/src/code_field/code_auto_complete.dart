@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import '../../../../code_field_custom/lib/code_text_field.dart';
+
+import '../../code_text_field.dart';
 
 /// config auto complete
 class CodeAutoComplete<T> {

@@ -7,9 +7,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 
-import '../../../../code_field_custom/lib/src/code_theme/code_theme.dart';
-import '../../../../code_field_custom/lib/src/line_numbers/line_number_controller.dart';
-import '../../../../code_field_custom/lib/src/line_numbers/line_number_style.dart';
+import '../code_theme/code_theme.dart';
+import '../line_numbers/line_number_controller.dart';
+import '../line_numbers/line_number_style.dart';
 import 'code_auto_complete.dart';
 import 'code_controller.dart';
 
@@ -276,16 +276,9 @@ class _CodeFieldState extends State<CodeField> {
   Widget build(BuildContext context) {
     // Default color scheme
     const rootKey = 'root';
-    final defaultBg = Colors.grey.shade900;
     final defaultText = Colors.grey.shade200;
 
     final styles = CodeTheme.of(context)?.styles;
-    Color? backgroundCol =
-        widget.background ?? styles?[rootKey]?.backgroundColor ?? defaultBg;
-
-    if (widget.decoration != null) {
-      backgroundCol = null;
-    }
 
     TextStyle textStyle = widget.textStyle ?? const TextStyle();
     textStyle = textStyle.copyWith(
@@ -295,8 +288,6 @@ class _CodeFieldState extends State<CodeField> {
 
     TextStyle numberTextStyle =
         widget.lineNumberStyle.textStyle ?? const TextStyle();
-    final numberColor =
-        (styles?[rootKey]?.color ?? defaultText).withOpacity(0.7);
 
     // Copy important attributes
     numberTextStyle = numberTextStyle.copyWith(
@@ -417,16 +408,12 @@ class _CodeFieldState extends State<CodeField> {
       ),
     );
 
-    return Container(
-      // decoration: widget.decoration,
-      // color: backgroundCol,
-      child: Row(
-        crossAxisAlignment: widget.isDense ? CrossAxisAlignment.start : CrossAxisAlignment.stretch,
-        children: [
-          if (widget.lineNumbers && numberCol != null) numberCol,
-          Expanded(child: codeCol),
-        ],
-      ),
+    return Row(
+      crossAxisAlignment: widget.isDense ? CrossAxisAlignment.start : CrossAxisAlignment.stretch,
+      children: [
+        if (widget.lineNumbers && numberCol != null) numberCol,
+        Expanded(child: codeCol),
+      ],
     );
   }
 }
