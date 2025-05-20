@@ -1,3 +1,6 @@
+> [!NOTE]
+> We decided to fork this package since we needed to make some UI adjustments and how we set the coding language for our use in coding FTTs and code component. Also enables us for easier customization options later.
+
 # CodeField
 
 A customizable code text field supporting syntax highlighting
