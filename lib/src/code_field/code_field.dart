@@ -192,7 +192,6 @@ class _CodeFieldState extends State<CodeField> {
 
   void _onFocusChanged() {
     final hasFocus = _focusNode?.hasFocus ?? false;
-    print('Focus changed: $hasFocus, ${widget.controller.selection.baseOffset}');
     setState(() {
       _numberController?.activeLine = hasFocus ? _getActiveLine(widget.controller.selection.baseOffset) : null;
     });
