@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:highlight/highlight.dart';
+
 import '../../code_text_field.dart';
 
 /// config auto complete
 class CodeAutoComplete<T> {
   /// can input your options which created through editor text and language.
-  List<T> Function(String, int cursorIndex, Mode?) optionsBuilder;
+  List<T> Function(String, int cursorIndex, String?) optionsBuilder;
 
   /// depends on your options, you can create your own item widget.
   final Widget Function(BuildContext, T, bool, Function(String) onTap)
@@ -76,7 +76,7 @@ class CodeAutoComplete<T> {
           options = optionsBuilder(
             widget.controller.text,
             widget.controller.selection.baseOffset,
-            widget.controller.language,
+            widget.controller.languageId,
           );
           if (!focusNode.hasFocus || options.isEmpty) return const Offstage();
           if (snapshot.hasData &&

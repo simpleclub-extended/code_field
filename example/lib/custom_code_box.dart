@@ -139,7 +139,7 @@ class _InnerFieldState extends State<InnerField> {
       stringMap: {
         "bev": TextStyle(color: Colors.indigo),
       },
-      language: allLanguages[widget.language],
+      languageId: widget.language,
     );
   }
 

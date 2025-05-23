@@ -48,7 +48,7 @@ class CodeField extends StatefulWidget {
   final TextStyle? textStyle;
 
   /// A way to replace specific line numbers by a custom TextSpan
-  final TextSpan Function(int, TextStyle?)? lineNumberBuilder;
+  final TextSpan Function(int, TextStyle?, bool)? lineNumberBuilder;
 
   /// {@macro flutter.widgets.textField.enabled}
   final bool? enabled;
@@ -144,6 +144,7 @@ class _CodeFieldState extends State<CodeField> {
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode!.onKey = _onKey;
     _focusNode!.attach(context, onKey: _onKey);
+    _focusNode!.addListener(_onFocusChanged);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       createAutoComplate();
@@ -174,11 +175,26 @@ class _CodeFieldState extends State<CodeField> {
     _numberController?.dispose();
     _keyboardVisibilitySubscription?.cancel();
     widget.autoComplete?.remove();
+    _focusNode?.removeListener(_onFocusChanged);
     super.dispose();
   }
 
   void rebuild() {
     setState(() {});
+  }
+
+  int? _getActiveLine(int cursorPosition) {
+    if (cursorPosition < 0) return null;
+    final textUntilCursor = widget.controller.text.substring(0, cursorPosition);
+    final lineBreaks = '\n'.allMatches(textUntilCursor).length;
+    return lineBreaks + 1;
+  }
+
+  void _onFocusChanged() {
+    final hasFocus = _focusNode?.hasFocus ?? false;
+    setState(() {
+      _numberController?.activeLine = hasFocus ? _getActiveLine(widget.controller.selection.baseOffset) : null;
+    });
   }
 
   void _onTextChanged() {
@@ -191,6 +207,7 @@ class _CodeFieldState extends State<CodeField> {
     }
 
     _numberController?.text = buf.join('\n');
+    _numberController?.activeLine = _getActiveLine(widget.controller.selection.baseOffset);
 
     // Find longest line
     longestLine = '';
@@ -258,16 +275,9 @@ class _CodeFieldState extends State<CodeField> {
   Widget build(BuildContext context) {
     // Default color scheme
     const rootKey = 'root';
-    final defaultBg = Colors.grey.shade900;
     final defaultText = Colors.grey.shade200;
 
     final styles = CodeTheme.of(context)?.styles;
-    Color? backgroundCol =
-        widget.background ?? styles?[rootKey]?.backgroundColor ?? defaultBg;
-
-    if (widget.decoration != null) {
-      backgroundCol = null;
-    }
 
     TextStyle textStyle = widget.textStyle ?? const TextStyle();
     textStyle = textStyle.copyWith(
@@ -277,12 +287,10 @@ class _CodeFieldState extends State<CodeField> {
 
     TextStyle numberTextStyle =
         widget.lineNumberStyle.textStyle ?? const TextStyle();
-    final numberColor =
-        (styles?[rootKey]?.color ?? defaultText).withOpacity(0.7);
 
     // Copy important attributes
     numberTextStyle = numberTextStyle.copyWith(
-      color: numberTextStyle.color ?? numberColor,
+      // color: numberTextStyle.color ?? numberColor,
       fontSize: textStyle.fontSize,
       fontFamily: textStyle.fontFamily,
     );
@@ -309,6 +317,7 @@ class _CodeFieldState extends State<CodeField> {
         decoration: InputDecoration(
           disabledBorder: InputBorder.none,
           isDense: widget.isDense,
+          fillColor: Colors.transparent,
         ),
         textAlign: widget.lineNumberStyle.textAlign,
       );
@@ -319,8 +328,20 @@ class _CodeFieldState extends State<CodeField> {
           left: widget.padding.left,
           right: widget.lineNumberStyle.margin / 2,
         ),
-        color: widget.lineNumberStyle.background,
-        child: lineNumberCol,
+        decoration: BoxDecoration(
+          color: widget.lineNumberStyle.background,
+          border: widget.lineNumberStyle.borderColor != null
+              ? Border(
+                  right: BorderSide(
+                    color: widget.lineNumberStyle.borderColor!
+                  ),
+                )
+              : null,
+        ),
+        child: ScrollConfiguration(
+          behavior: NoScrollbarScrollBehavior(),
+            child: lineNumberCol,
+        ),
       );
     }
 
@@ -345,12 +366,20 @@ class _CodeFieldState extends State<CodeField> {
         disabledBorder: InputBorder.none,
         border: InputBorder.none,
         focusedBorder: InputBorder.none,
+        hoverColor: Colors.transparent,
+        fillColor: Colors.transparent,
         isDense: widget.isDense,
         hintText: widget.hintText,
         hintStyle: widget.hintStyle,
+        constraints: BoxConstraints(
+          maxHeight: widget.maxLines != null
+              ? widget.maxLines! * textStyle.fontSize!
+              : double.infinity,
+        ),
       ),
       onTapOutside: (e) {
         Future.delayed(const Duration(milliseconds: 300), hideAutoComplete);
+        _focusNode?.unfocus();
       },
       cursorColor: cursorColor,
       autocorrect: false,
@@ -378,17 +407,26 @@ class _CodeFieldState extends State<CodeField> {
       ),
     );
 
-    return Container(
-      decoration: widget.decoration,
-      color: backgroundCol,
-      padding: !widget.lineNumbers ? const EdgeInsets.only(left: 8) : null,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (widget.lineNumbers && numberCol != null) numberCol,
-          Expanded(child: codeCol),
-        ],
-      ),
+    return Row(
+      crossAxisAlignment: widget.isDense ? CrossAxisAlignment.start : CrossAxisAlignment.stretch,
+      children: [
+        if (widget.lineNumbers && numberCol != null) numberCol,
+        Expanded(child: codeCol),
+      ],
     );
+  }
+}
+
+class NoScrollbarScrollBehavior extends ScrollBehavior {
+  @override
+  Widget buildScrollbar(BuildContext context, Widget child, ScrollableDetails details) {
+    // Just return the child without wrapping it in a Scrollbar
+    return child;
+  }
+
+  @override
+  Widget buildOverscrollIndicator(BuildContext context, Widget child, ScrollableDetails details) {
+    // This removes the glow effect as well
+    return child;
   }
 }

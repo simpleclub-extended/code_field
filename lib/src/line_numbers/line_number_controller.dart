@@ -1,7 +1,9 @@
 import 'package:flutter/widgets.dart';
 
 class LineNumberController extends TextEditingController {
-  final TextSpan Function(int, TextStyle?)? lineNumberBuilder;
+  final TextSpan Function(int, TextStyle?, bool)? lineNumberBuilder;
+
+  int? activeLine;
 
   LineNumberController(
     this.lineNumberBuilder,
@@ -19,10 +21,11 @@ class LineNumberController extends TextEditingController {
     for (int k = 0; k < list.length; k++) {
       final el = list[k];
       final number = int.parse(el);
+      final isLineActive = activeLine == number;
       var textSpan = TextSpan(text: el, style: style);
 
       if (lineNumberBuilder != null) {
-        textSpan = lineNumberBuilder!(number, style);
+        textSpan = lineNumberBuilder!(number, style, isLineActive);
       }
 
       children.add(textSpan);

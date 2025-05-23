@@ -16,11 +16,14 @@ class LineNumberStyle {
   /// Central horizontal margin between the numbers and the code
   final double margin;
 
+  final Color? borderColor;
+
   const LineNumberStyle({
     this.width = 42.0,
     this.textAlign = TextAlign.right,
     this.margin = 10.0,
     this.textStyle,
     this.background,
+    this.borderColor,
   });
 }
