@@ -397,14 +397,9 @@ class _CodeFieldState extends State<CodeField> {
       data: Theme.of(context).copyWith(
         textSelectionTheme: widget.textSelectionTheme,
       ),
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          // Control horizontal scrolling
-          return widget.wrap
-              ? codeField
-              : _wrapInScrollView(codeField, textStyle, constraints.maxWidth);
-        },
-      ),
+      child: widget.wrap
+          ? codeField
+          : _wrapInScrollView(codeField, textStyle, 50),
     );
 
     return Row(
