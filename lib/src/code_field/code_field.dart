@@ -402,12 +402,18 @@ class _CodeFieldState extends State<CodeField> {
           : _wrapInScrollView(codeField, textStyle, 50),
     );
 
-    return Row(
-      crossAxisAlignment: widget.isDense ? CrossAxisAlignment.start : CrossAxisAlignment.stretch,
-      children: [
-        if (widget.lineNumbers && numberCol != null) numberCol,
-        Expanded(child: codeCol),
-      ],
+    return MouseRegion(
+      cursor: SystemMouseCursors.text,
+      child: GestureDetector(
+        onTap: () => _focusNode?.requestFocus(),
+        child: Row(
+          crossAxisAlignment: widget.isDense ? CrossAxisAlignment.start : CrossAxisAlignment.stretch,
+          children: [
+            if (widget.lineNumbers && numberCol != null) numberCol,
+            Expanded(child: codeCol),
+          ],
+        ),
+      ),
     );
   }
 }
